@@ -1,5 +1,6 @@
 require('normalize.css/normalize.css');
-require('styles/App.scss');
+require('styles/App2.css');
+require('styles/font-awesome.css')
 
 import React from 'react';
 import ReactDOM from 'react-dom';
@@ -18,8 +19,6 @@ imageDatas = (function genImageUrl(imageDatasArr){
 		singleImageData.imageUrl = require("../images/" + singleImageData.fileName);
 
 		imageDatasArr[i] = singleImageData;
-
-
 
 	}
 
@@ -74,6 +73,7 @@ class ImgFigure extends React.Component{
 
 		//如果图片的选择角度有值，并且不为0，添加旋转角度
 		if(this.props.arrange.rotate){
+
 			(['Moz','Ms','Webkit','']).forEach(function(value){
 				styleObj[value + 'Transform'] = 'rotate(' + this.props.arrange.rotate + 'deg)';
 
@@ -102,6 +102,47 @@ class ImgFigure extends React.Component{
 				</figcaption>
 			</figure>
 		)
+	}
+
+}
+
+class ControllerUnit extends React.Component{
+	constructor(props){
+		super(props);
+		this.handleClick = this.handleClick.bind(this);
+	}
+
+	handleClick(e){
+
+		if (this.props.arrange.isCenter) {
+			this.props.inverse();
+
+		}else{
+
+			this.props.center();
+		}
+
+		e.stopPropagation();
+		e.preventDefault();
+	}
+
+	render(){
+
+		var controllerUnitClassName = 'controller-unit';
+		var iClassName = ' ';
+		if(this.props.arrange.isCenter){
+			controllerUnitClassName += ' is-center';
+			iClassName += 'fa fa-undo ';
+		}
+
+		if(this.props.arrange.isInverse){
+
+			controllerUnitClassName += ' is-inverse';
+
+			iClassName += ' ';
+		}
+
+		return <span className={controllerUnitClassName} onClick={this.handleClick}><i className={iClassName}></i></span>
 	}
 
 }
@@ -169,7 +210,7 @@ class AppComponent extends React.Component {
 	}
 
 	/*
-	 *利用rearrange函数居中	
+	 *利用rearrange函数居中
 	 */
 	center(index){
 		return function(){
@@ -196,7 +237,7 @@ class AppComponent extends React.Component {
             vPosRangeX = vPosRange.x,
 
             imgsArrangeTopArr = [],
-            topImgNum = Math.ceil(Math.random()*2),//取或者不取
+            topImgNum = Math.floor(Math.random()*2),//取或者不取
             topImgSlipceIndex = 0,
 
             imgsArrangeCenterArr = imgsArrangeArr.splice(centerIndex,1);
@@ -209,7 +250,7 @@ class AppComponent extends React.Component {
         	isCenter:true
         }
 
-     
+
 
         //取出要布局上侧的图片信息状态
         topImgSlipceIndex = Math.ceil(Math.random() * (imgsArrangeArr.length - topImgNum));
@@ -224,11 +265,11 @@ class AppComponent extends React.Component {
         		},
         		rotate : get30DegRandom(),
         		isCenter:false
-        		
+
         	};
         });
 
-        
+
 
         //布局两侧的图片
         for (var i = 0 ,j = imgsArrangeArr.length , k = j / 2; i < j; i++) {
@@ -241,16 +282,16 @@ class AppComponent extends React.Component {
         	} else{
         		hPosRangeLORX = hPosRangeRightSecX;
         	}
-        	
+
         	imgsArrangeArr[i] = {
         		pos : {
         			top : getRangeRadom(hPosRangeY[0],hPosRangeY[1]),
         			left : getRangeRadom(hPosRangeLORX[0],hPosRangeLORX[1])
         		},
-				
+
         		rotate : get30DegRandom()
         	};
-       
+
 
         }
 
@@ -270,7 +311,7 @@ class AppComponent extends React.Component {
 
 	//组件加载以后为每张图片计算返回
 	componentDidMount(){
-		
+
 
 		//获取舞台的大小
 		var stageDOM = ReactDOM.findDOMNode(this.refs.stage);
@@ -293,10 +334,10 @@ class AppComponent extends React.Component {
 			top :　halfStageH - halfImgH
 		}
 
-		//计算左侧，右侧区域图片排布的取值范围 
+		//计算左侧，右侧区域图片排布的取值范围
 		this.Constant.hPosRange.leftSecX[0] = -halfImgW;
 		this.Constant.hPosRange.leftSecX[1] = halfStageW - halfImgW*3;
-		
+
 		this.Constant.hPosRange.rightSecX[0] = halfStageW + halfImgW;
 		this.Constant.hPosRange.rightSecX[1] = stageW - halfImgW;
 
@@ -314,7 +355,7 @@ class AppComponent extends React.Component {
 	}
 
     render() {
-	
+
 		var controllerUnits = [],
 		imgFigures = [];
 
@@ -335,6 +376,9 @@ class AppComponent extends React.Component {
 
 			imgFigures.push(<ImgFigure data={value} ref={"imageFigure" + index}
 				arrange={this.state.imgsArrangeArr[index]}	inverse={this.inverse(index)} center={this.center(index)}/>);
+
+			controllerUnits.push(<ControllerUnit key={index} ref={'controllerUnit' + index} arrange={this.state.imgsArrangeArr[index]} inverse={this.inverse(index)} center={this.center(index)}/>);
+
 		}.bind(this));
 
 	    return (
@@ -342,7 +386,7 @@ class AppComponent extends React.Component {
 	      		<section className="img-sec">
 					{imgFigures}
 	      		</section>
-				
+
 				<nav className="controller-nav" >
 					{controllerUnits}
 				</nav>
