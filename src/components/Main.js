@@ -12,7 +12,7 @@ let imageDatas = require('json!../data/imageDatas.json');
 //利用自执行函数，将图片名信息转成图片URL路径信息
 imageDatas = (function genImageUrl(imageDatasArr){
 
-	for(var i = 0 ; i < imageDatasArr.length ; i++){
+	for(var i = 0 ,j = imageDatasArr.length; i < j ; i++){
 
 		var singleImageData = imageDatasArr[i];
 
